@@ -21,6 +21,24 @@ import pages._
 
 trait PageGenerators {
 
+  implicit lazy val arbitraryPlaceOfBirthPage: Arbitrary[PlaceOfBirthPage.type] =
+    Arbitrary(PlaceOfBirthPage)
+
+  implicit lazy val arbitraryNumberOfPropertiesPage: Arbitrary[NumberOfPropertiesPage.type] =
+    Arbitrary(NumberOfPropertiesPage)
+
+  implicit lazy val arbitraryNameChangePage: Arbitrary[NameChangePage.type] =
+    Arbitrary(NameChangePage)
+
+  implicit lazy val arbitraryEventNamePage: Arbitrary[EventNamePage.type] =
+    Arbitrary(EventNamePage)
+
+  implicit lazy val arbitraryDateOfBirthPage: Arbitrary[DateOfBirthPage.type] =
+    Arbitrary(DateOfBirthPage)
+
+  implicit lazy val arbitraryAddressPage: Arbitrary[AddressPage.type] =
+    Arbitrary(AddressPage)
+
   implicit lazy val arbitraryContactPreferencesPage: Arbitrary[ContactPreferencesPage.type] =
     Arbitrary(ContactPreferencesPage)
 }

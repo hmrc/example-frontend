@@ -63,3 +63,58 @@ contactPreferences.phone = Phone
 contactPreferences.checkYourAnswersLabel = contactPreferences
 contactPreferences.error.required = Select contactPreferences
 contactPreferences.change.hidden = ContactPreferences
+
+journeyInformation.title = journeyInformation
+journeyInformation.heading = journeyInformation
+
+address.title = address
+address.heading = address
+address.AddressLine1 = AddressLine1
+address.Postcode = Postcode
+address.checkYourAnswersLabel = Address
+address.error.AddressLine1.required = Enter AddressLine1
+address.error.Postcode.required = Enter Postcode
+address.error.AddressLine1.length = AddressLine1 must be 100 characters or less
+address.error.Postcode.length = Postcode must be 100 characters or less
+address.AddressLine1.change.hidden = AddressLine1
+address.Postcode.change.hidden = Postcode
+
+dateOfBirth.title = DateOfBirth
+dateOfBirth.heading = DateOfBirth
+dateOfBirth.hint = For example, 12 11 2007
+dateOfBirth.checkYourAnswersLabel = DateOfBirth
+dateOfBirth.error.required.all = Enter the dateOfBirth
+dateOfBirth.error.required.two = The dateOfBirth must include {0} and {1}
+dateOfBirth.error.required = The dateOfBirth must include {0}
+dateOfBirth.error.invalid = Enter a real DateOfBirth
+dateOfBirth.change.hidden = DateOfBirth
+
+eventName.title = eventName
+eventName.heading = eventName
+eventName.checkYourAnswersLabel = eventName
+eventName.error.required = Enter eventName
+eventName.error.length = EventName must be 100 characters or less
+eventName.change.hidden = EventName
+
+nameChange.title = nameChange
+nameChange.heading = nameChange
+nameChange.checkYourAnswersLabel = nameChange
+nameChange.error.required = Select yes if nameChange
+nameChange.change.hidden = NameChange
+
+numberOfProperties.title = NumberOfProperties
+numberOfProperties.heading = NumberOfProperties
+numberOfProperties.checkYourAnswersLabel = NumberOfProperties
+numberOfProperties.error.nonNumeric = Enter your numberOfProperties using numbers
+numberOfProperties.error.required = Enter your numberOfProperties
+numberOfProperties.error.wholeNumber = Enter your numberOfProperties using whole numbers
+numberOfProperties.error.outOfRange = NumberOfProperties must be between {0} and {1}
+numberOfProperties.change.hidden = NumberOfProperties
+
+placeOfBirth.title = Place of birth
+placeOfBirth.heading = Place of birth
+placeOfBirth.england = England
+placeOfBirth.wales = Wales
+placeOfBirth.checkYourAnswersLabel = Place of birth
+placeOfBirth.error.required = Select placeOfBirth
+placeOfBirth.change.hidden = PlaceOfBirth
