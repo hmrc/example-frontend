@@ -34,6 +34,48 @@ class NavigatorSpec extends SpecBase {
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad
       }
+
+      "must go from the ContactPreferencePage to DateOfBirthPage " in {
+        navigator.nextPage(
+          ContactPreferencesPage, NormalMode, UserAnswers("id")
+        ) mustBe routes.DateOfBirthController.onPageLoad(NormalMode)
+      }
+
+      "must go from the DateOfBirthPage to PlaceOfBirthPage" in {
+        navigator.nextPage(
+          DateOfBirthPage, NormalMode, UserAnswers("id")
+        ) mustBe routes.PlaceOfBirthController.onPageLoad(NormalMode)
+      }
+
+      "must go from the PlaceOfBirthPage to NumberOfPropertiesPage" in {
+        navigator.nextPage(
+          PlaceOfBirthPage, NormalMode, UserAnswers("id")
+        ) mustBe routes.NumberOfPropertiesController.onPageLoad(NormalMode)
+      }
+
+      "must go from the NumberOfPropertiesPage to NameChangePage" in {
+        navigator.nextPage(
+          NumberOfPropertiesPage, NormalMode, UserAnswers("id")
+        ) mustBe routes.NameChangeController.onPageLoad(NormalMode)
+      }
+
+      "must go from the NameChangePage to EventNamePage" in {
+        navigator.nextPage(
+          NameChangePage, NormalMode, UserAnswers("id")
+        ) mustBe routes.EventNameController.onPageLoad(NormalMode)
+      }
+
+      "must go from the EventNamePage to AddressPage" in {
+        navigator.nextPage(
+          EventNamePage, NormalMode, UserAnswers("id")
+        ) mustBe routes.AddressController.onPageLoad(NormalMode)
+      }
+
+      "must go from the AddressPage to CheckYourAnswers" in {
+        navigator.nextPage(
+          AddressPage, NormalMode, UserAnswers("id")
+        ) mustBe routes.CheckYourAnswersController.onPageLoad
+      }
     }
 
     "in Check mode" - {
