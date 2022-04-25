@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import org.scalacheck.Arbitrary
-import pages._
+import models.ContactPreferences
+import pages.behaviours.PageBehaviours
 
-trait PageGenerators {
+class ContactPreferencesPageSpec extends PageBehaviours {
 
-  implicit lazy val arbitraryContactPreferencesPage: Arbitrary[ContactPreferencesPage.type] =
-    Arbitrary(ContactPreferencesPage)
+  "ContactPreferencesPage" - {
+
+    beRetrievable[Set[ContactPreferences]](ContactPreferencesPage)
+
+    beSettable[Set[ContactPreferences]](ContactPreferencesPage)
+
+    beRemovable[Set[ContactPreferences]](ContactPreferencesPage)
+  }
 }

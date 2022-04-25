@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import org.scalacheck.Arbitrary
-import pages._
+import javax.inject.Inject
 
-trait PageGenerators {
+import forms.mappings.Mappings
+import play.api.data.Form
+import play.api.data.Forms.set
+import models.ContactPreferences
 
-  implicit lazy val arbitraryContactPreferencesPage: Arbitrary[ContactPreferencesPage.type] =
-    Arbitrary(ContactPreferencesPage)
+class ContactPreferencesFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Set[ContactPreferences]] =
+    Form(
+      "value" -> set(enumerable[ContactPreferences]("contactPreferences.error.required")).verifying(nonEmptySet("contactPreferences.error.required"))
+    )
 }

@@ -55,3 +55,11 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+contactPreferences.title = contactPreferences
+contactPreferences.heading = contactPreferences
+contactPreferences.email = Email
+contactPreferences.phone = Phone
+contactPreferences.checkYourAnswersLabel = contactPreferences
+contactPreferences.error.required = Select contactPreferences
+contactPreferences.change.hidden = ContactPreferences

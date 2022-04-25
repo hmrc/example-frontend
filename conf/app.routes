@@ -19,3 +19,8 @@ GET         /account/sign-out                            controllers.auth.AuthCo
 GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad
+
+GET        /contactPreferences                        controllers.ContactPreferencesController.onPageLoad(mode: Mode = NormalMode)
+POST       /contactPreferences                        controllers.ContactPreferencesController.onSubmit(mode: Mode = NormalMode)
+GET        /changeContactPreferences                  controllers.ContactPreferencesController.onPageLoad(mode: Mode = CheckMode)
+POST       /changeContactPreferences                  controllers.ContactPreferencesController.onSubmit(mode: Mode = CheckMode)

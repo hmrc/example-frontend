@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import org.scalacheck.Arbitrary
-import pages._
+import models.ContactPreferences
+import play.api.libs.json.JsPath
 
-trait PageGenerators {
+case object ContactPreferencesPage extends QuestionPage[Set[ContactPreferences]] {
 
-  implicit lazy val arbitraryContactPreferencesPage: Arbitrary[ContactPreferencesPage.type] =
-    Arbitrary(ContactPreferencesPage)
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "contactPreferences"
 }

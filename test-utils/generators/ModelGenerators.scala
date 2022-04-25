@@ -21,4 +21,9 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryContactPreferences: Arbitrary[ContactPreferences] =
+    Arbitrary {
+      Gen.oneOf(ContactPreferences.values)
+    }
 }
