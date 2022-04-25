@@ -18,8 +18,9 @@ package controllers
 
 import controllers.actions._
 import forms.ContactPreferencesFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.ContactPreferencesPage
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -28,6 +29,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ContactPreferencesView
 
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class ContactPreferencesController @Inject()(
@@ -44,18 +46,24 @@ class ContactPreferencesController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
 
-      val preparedForm = request.userAnswers.get(ContactPreferencesPage) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
+      val preparedForm =
+        request.userAnswers.getOrElse(
+          UserAnswers(
+            id = request.userId,
+            lastUpdated = Instant.now()
+          )
+        ).get(ContactPreferencesPage) match {
+          case None => form
+          case Some(value) => form.fill(value)
+        }
 
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
 
       form.bindFromRequest().fold(
@@ -64,7 +72,12 @@ class ContactPreferencesController @Inject()(
 
         value =>
           for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(ContactPreferencesPage, value))
+            updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(
+              UserAnswers(
+                id = request.userId,
+                lastUpdated = Instant.now()
+              )
+            ).set(ContactPreferencesPage, value))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(navigator.nextPage(ContactPreferencesPage, mode, updatedAnswers))
       )
