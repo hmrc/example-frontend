@@ -35,10 +35,10 @@ error.number = Please enter a valid number
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-index.title = example-frontend
-index.heading = example-frontend
-index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
-
+index.title = Example frontend - Start now
+index.heading = Example frontend
+index.guidance = This is an example frontend microservice built using scaffolds. It is used as an example of some of the software design patterns that are recommended when building frontend microservices on MDTP.
+index.guidance2 = Click 'Start now' to begin your journey through the example pages.
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 
@@ -55,3 +55,67 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+contactPreferences.title = How would you like to be contacted?
+contactPreferences.heading = How would you like to be contacted?
+contactPreferences.email = Email
+contactPreferences.phone = Phone
+contactPreferences.checkYourAnswersLabel = How would you like to be contacted?
+contactPreferences.error.required = Select how you would like to be contacted
+contactPreferences.change.hidden = ContactPreferences
+
+journeyInformation.title = journeyInformation
+journeyInformation.heading = journeyInformation
+
+address.title = What is your address?
+address.heading = What is your address?
+address.AddressLine1 = Address line 1
+address.Postcode = Postcode
+address.checkYourAnswersLabel = What is your address?
+address.error.AddressLine1.required = Enter your address line 1
+address.error.Postcode.required = Enter your Postcode
+address.error.AddressLine1.length = Your address line 1 must be 100 characters or less
+address.error.Postcode.length = You Postcode must be 100 characters or less
+address.AddressLine1.change.hidden = AddressLine1
+address.Postcode.change.hidden = Postcode
+
+dateOfBirth.title = What is your date of birth?
+dateOfBirth.heading = What is your date of birth?
+dateOfBirth.hint = For example, 12 11 2007
+dateOfBirth.checkYourAnswersLabel = What is your date of birth?
+dateOfBirth.error.required.all = Enter your date of birth
+dateOfBirth.error.required.two = Your date of birth must include {0} and {1}
+dateOfBirth.error.required = Your date of birth must include {0}
+dateOfBirth.error.invalid = Enter a real date of birth
+dateOfBirth.change.hidden = DateOfBirth
+
+eventName.title = What is the name of the event?
+eventName.heading = What is the name of the event?
+eventName.checkYourAnswersLabel = What is the name of the event?
+eventName.error.required = Enter the name of the event
+eventName.error.length = The name of the event must be 100 characters or less
+eventName.change.hidden = EventName
+
+nameChange.title = Have you changed your name?
+nameChange.heading = Have you changed your name?
+nameChange.checkYourAnswersLabel = Have you changed your name?
+nameChange.hint = This includes changing your last name or spelling your name differently.
+nameChange.error.required = Select yes if you have changed your name
+nameChange.change.hidden = NameChange
+
+numberOfProperties.title = How many properties do you own?
+numberOfProperties.heading = How many properties do you own?
+numberOfProperties.checkYourAnswersLabel = How many properties do you own?
+numberOfProperties.error.nonNumeric = Enter how many properties you own using numbers
+numberOfProperties.error.required = Enter how many properties you own
+numberOfProperties.error.wholeNumber = Enter how many properties you own using whole numbers
+numberOfProperties.error.outOfRange = How many properties you own must be between {0} and {1}
+numberOfProperties.change.hidden = NumberOfProperties
+
+placeOfBirth.title = Where were you born?
+placeOfBirth.heading = Where were you born?
+placeOfBirth.england = England
+placeOfBirth.wales = Wales
+placeOfBirth.checkYourAnswersLabel = Where were you born?
+placeOfBirth.error.required = Select where you were born
+placeOfBirth.change.hidden = PlaceOfBirth
