@@ -17,26 +17,55 @@
 package controllers
 
 import base.SpecBase
+import models.{Address, ContactPreferences, PlaceOfBirth}
+import pages.{AddressPage, ContactPreferencesPage, DateOfBirthPage, EventNamePage, NameChangePage, NumberOfPropertiesPage, PlaceOfBirthPage}
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import viewmodels.checkAnswers.{AddressSummary, ContactPreferencesSummary, DateOfBirthSummary, EventNameSummary, NameChangeSummary, NumberOfPropertiesSummary, PlaceOfBirthSummary}
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
+
+import java.time.LocalDate
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   "Check Your Answers Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET with all required data" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val cp: Set[ContactPreferences] = Set(ContactPreferences.Email)
+      val dob: LocalDate = LocalDate.now()
+      val address: Address = Address("1 Street", "AA1 1AA")
+
+      val userAnswers = emptyUserAnswers
+        .set(ContactPreferencesPage, cp).success.value
+        .set(DateOfBirthPage, dob).success.value
+        .set(PlaceOfBirthPage, PlaceOfBirth.England).success.value
+        .set(NumberOfPropertiesPage, 25).success.value
+        .set(NameChangePage, false).success.value
+        .set(EventNamePage, "Really good event").success.value
+        .set(AddressPage, address).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
-
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = SummaryListViewModel(Seq.empty)
+        implicit val msgs: Messages = messages(application)
+
+        val expectedSummaryListItems = Seq(
+          ContactPreferencesSummary.row(userAnswers),
+          DateOfBirthSummary.row(userAnswers),
+          PlaceOfBirthSummary.row(userAnswers),
+          NumberOfPropertiesSummary.row(userAnswers),
+          NameChangeSummary.row(userAnswers),
+          EventNameSummary.row(userAnswers),
+          AddressSummary.row(userAnswers)
+        ).flatten
+
+        val list = SummaryListViewModel(expectedSummaryListItems)
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(list)(request, messages(application)).toString

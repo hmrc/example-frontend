@@ -18,6 +18,7 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import viewmodels.checkAnswers.{AddressSummary, ContactPreferencesSummary, DateOfBirthSummary, EventNameSummary, NameChangeSummary, NumberOfPropertiesSummary, PlaceOfBirthSummary}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -37,7 +38,15 @@ class CheckYourAnswersController @Inject()(
     implicit request =>
 
       val list = SummaryListViewModel(
-        rows = Seq.empty
+        rows = Seq(
+          ContactPreferencesSummary.row(request.userAnswers),
+          DateOfBirthSummary.row(request.userAnswers),
+          PlaceOfBirthSummary.row(request.userAnswers),
+          NumberOfPropertiesSummary.row(request.userAnswers),
+          NameChangeSummary.row(request.userAnswers),
+          EventNameSummary.row(request.userAnswers),
+          AddressSummary.row(request.userAnswers)
+        ).flatten
       )
 
       Ok(view(list))
