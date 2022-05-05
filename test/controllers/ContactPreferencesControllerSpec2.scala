@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.{DataRequiredAction, FakeDataRetrievalAction, FakeIdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, FakeDataRetrievalAction, FakeIdentifierAction}
 import forms.ContactPreferencesFormProvider
 import models.{ContactPreferences, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -66,24 +66,27 @@ class ContactPreferencesControllerSpec2 extends PlaySpec with BeforeAndAfterEach
     reset(mockSessionRepository, mockNavigator)
   }
 
-  val stubbedControllerDefault = new ContactPreferencesController(
-    Helpers.stubMessagesApi(),
-    mockSessionRepository,
-    mockNavigator,
-    fakeIdentifierAction,
-    fakeDataRetrievalAction,
-    mockDataRequiredAction,
-    mockContactPreferencesFormProvider,
-    Helpers.stubMessagesControllerComponents(), view
-  )
+  private def createController(navigator: Navigator,dataRetrievalAction: DataRetrievalAction) = {
+    new ContactPreferencesController(
+      Helpers.stubMessagesApi(),
+      mockSessionRepository,
+      navigator,
+      fakeIdentifierAction,
+      dataRetrievalAction,
+      mockDataRequiredAction,
+      mockContactPreferencesFormProvider,
+      Helpers.stubMessagesControllerComponents(), view
+    )
+  }
+
+  val stubbedControllerDefault = createController(mockNavigator,fakeDataRetrievalAction)
 
   "ContactPreferences Controller" must {
     "new test must return ok and the correct view for a GET in " in{
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       val view = injector.instanceOf[ContactPreferencesView]
       val fakeRequest = FakeRequest(GET, contactPreferencesRoute)
       val messages = injector.instanceOf[MessagesApi].preferred(fakeRequest)
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val result = stubbedControllerDefault.onPageLoad(NormalMode).apply(fakeRequest)
 
@@ -96,38 +99,20 @@ class ContactPreferencesControllerSpec2 extends PlaySpec with BeforeAndAfterEach
       val view = injector.instanceOf[ContactPreferencesView]
       val fakeRequest = FakeRequest(GET, contactPreferencesRoute)
       val messages = injector.instanceOf[MessagesApi].preferred(fakeRequest)
+      val testSpecificStubbedController = createController(mockNavigator,new FakeDataRetrievalAction(nonEmptyUserAnswers))
 
-      val stubbedController = new ContactPreferencesController(
-        Helpers.stubMessagesApi(),
-        mockSessionRepository,
-        mockNavigator,
-        fakeIdentifierAction,
-        new FakeDataRetrievalAction(nonEmptyUserAnswers),
-        mockDataRequiredAction,
-        mockContactPreferencesFormProvider,
-        Helpers.stubMessagesControllerComponents(), view
-      )
-
-      val result = stubbedController.onPageLoad(NormalMode).apply(fakeRequest)
+      val result = testSpecificStubbedController.onPageLoad(NormalMode).apply(fakeRequest)
       status(result) mustEqual OK
        // contentAsString(result) mustEqual view(form.fill(ContactPreferences.values.toSet), NormalMode)(fakeRequest, messages).toString
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val fakePostRequest = FakeRequest(POST, contactPreferencesRoute).withFormUrlEncodedBody(("value[0]", ContactPreferences.values.head.toString))
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val stubbedController = new ContactPreferencesController(
-        Helpers.stubMessagesApi(),
-        mockSessionRepository,
-        new FakeNavigator(onwardRoute),
-        fakeIdentifierAction,
-        new FakeDataRetrievalAction(nonEmptyUserAnswers),
-        mockDataRequiredAction,
-        mockContactPreferencesFormProvider,
-        Helpers.stubMessagesControllerComponents(), view)
+      val fakePostRequest = FakeRequest(POST, contactPreferencesRoute).withFormUrlEncodedBody(("value[0]", ContactPreferences.values.head.toString))
+      val testSpecificStubbedController = createController(new FakeNavigator(onwardRoute),new FakeDataRetrievalAction(nonEmptyUserAnswers))
 
-      val result = stubbedController.onSubmit(NormalMode).apply(fakePostRequest)
+      val result = testSpecificStubbedController.onSubmit(NormalMode).apply(fakePostRequest)
 
       status(result) mustEqual SEE_OTHER
       redirectLocation(result).value mustEqual onwardRoute.url
@@ -137,19 +122,10 @@ class ContactPreferencesControllerSpec2 extends PlaySpec with BeforeAndAfterEach
       val fakePostRequest = FakeRequest(POST, contactPreferencesRoute).withFormUrlEncodedBody(("value", "invalid value"))
       val messages = injector.instanceOf[MessagesApi].preferred(fakePostRequest)
       val view = injector.instanceOf[ContactPreferencesView]
-
-      val stubbedController = new ContactPreferencesController(
-        Helpers.stubMessagesApi(),
-        mockSessionRepository,
-        new FakeNavigator(onwardRoute),
-        fakeIdentifierAction,
-        new FakeDataRetrievalAction(userAnswers),
-        mockDataRequiredAction,
-        mockContactPreferencesFormProvider,
-        Helpers.stubMessagesControllerComponents(), view)
-
+      val testSpecificStubbedController = createController(new FakeNavigator(onwardRoute),new FakeDataRetrievalAction(userAnswers))
       val boundForm = form.bind(Map("value" -> "invalid value"))
-      val result = stubbedController.onSubmit(NormalMode).apply(fakePostRequest)
+
+      val result = testSpecificStubbedController.onSubmit(NormalMode).apply(fakePostRequest)
 
       status(result) mustEqual BAD_REQUEST
      // contentAsString(result) mustEqual view(boundForm, NormalMode)(fakePostRequest, messages).toString
@@ -159,19 +135,9 @@ class ContactPreferencesControllerSpec2 extends PlaySpec with BeforeAndAfterEach
       val fakeRequest = FakeRequest(GET, contactPreferencesRoute)
       val messages = injector.instanceOf[MessagesApi].preferred(fakeRequest)
       val view = injector.instanceOf[ContactPreferencesView]
-
-      val stubbedController = new ContactPreferencesController(
-        Helpers.stubMessagesApi(),
-        mockSessionRepository,
-        mockNavigator,
-        fakeIdentifierAction,
-        new FakeDataRetrievalAction(None),
-        mockDataRequiredAction,
-        mockContactPreferencesFormProvider,
-        Helpers.stubMessagesControllerComponents(), view)
-
-        val result = stubbedController.onPageLoad(NormalMode).apply(fakeRequest)
-        status(result) mustEqual OK
+      val testSpecificStubbedController = createController(mockNavigator,new FakeDataRetrievalAction(None))
+      val result = testSpecificStubbedController.onPageLoad(NormalMode).apply(fakeRequest)
+      status(result) mustEqual OK
        // contentAsString(result) mustEqual view(form, NormalMode)(fakeRequest, messages).toString
 
     }
@@ -180,21 +146,11 @@ class ContactPreferencesControllerSpec2 extends PlaySpec with BeforeAndAfterEach
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       val fakePostRequest = FakeRequest(POST, contactPreferencesRoute).withFormUrlEncodedBody(("value[0]", ContactPreferences.values.head.toString))
       val view = injector.instanceOf[ContactPreferencesView]
+      val testSpecificStubbedController = createController(new FakeNavigator(onwardRoute),new FakeDataRetrievalAction(None))
+      val result = testSpecificStubbedController.onSubmit(NormalMode).apply(fakePostRequest)
 
-      val stubbedController = new ContactPreferencesController(
-        Helpers.stubMessagesApi(),
-        mockSessionRepository,
-        new FakeNavigator(onwardRoute),
-        fakeIdentifierAction,
-        new FakeDataRetrievalAction(None),
-        mockDataRequiredAction,
-        mockContactPreferencesFormProvider,
-        Helpers.stubMessagesControllerComponents(), view)
-
-      val result = stubbedController.onSubmit(NormalMode).apply(fakePostRequest)
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+      status(result) mustEqual SEE_OTHER
+      redirectLocation(result).value mustEqual onwardRoute.url
 
     }
   }
