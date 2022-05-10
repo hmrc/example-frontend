@@ -16,6 +16,7 @@
 
 package controllers
 
+import base.SpecBase
 import controllers.actions.{DataRequiredAction, FakeDataRetrievalAction, FakeIdentifierAction}
 import forms.ContactPreferencesFormProvider
 import models.{ContactPreferences, NormalMode, UserAnswers}
@@ -23,9 +24,7 @@ import navigation.Navigator
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.PlaySpec
 import pages.ContactPreferencesPage
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.{Call, ControllerComponents}
@@ -38,29 +37,27 @@ import views.html.ContactPreferencesView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ContactPreferencesControllerSpec2 extends PlaySpec with BeforeAndAfterEach with MockitoSugar {
+class ContactPreferencesControllerSpec2 extends SpecBase with BeforeAndAfterEach with MockitoSugar {
   val cc: ControllerComponents = Helpers.stubControllerComponents()
-  private val userAnswersId: String = "id"
 
-  private def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
-  private val nonEmptyUserAnswers = Some(UserAnswers(userAnswersId).set(ContactPreferencesPage, ContactPreferences.values.toSet).success.value)
-  lazy val contactPreferencesRoute = routes.ContactPreferencesController.onPageLoad(NormalMode).url
-
+  private val nonEmptyUserAnswers = Some(emptyUserAnswers.set(ContactPreferencesPage, ContactPreferences.values.toSet).success.value)
+  private val contactPreferencesRoute = routes.ContactPreferencesController.onPageLoad(NormalMode).url
+  private val view = injector.instanceOf[ContactPreferencesView]
+  private val fakeIdentifierAction = new FakeIdentifierAction(cc.parsers)
+  private val fakeGetRequest = FakeRequest(GET, contactPreferencesRoute)
+  private val fakePostRequest = FakeRequest(POST, contactPreferencesRoute)
+  private val contactPreferencesFormProvider = new ContactPreferencesFormProvider()
   private val mockSessionRepository = mock[SessionRepository]
   private val mockNavigator = mock[Navigator]
-  private val fakeIdentifierAction = new FakeIdentifierAction(cc.parsers)
   private val mockDataRequiredAction = mock[DataRequiredAction]
-  private val mockContactPreferencesFormProvider = new ContactPreferencesFormProvider()
-  private val view = injector.instanceOf[ContactPreferencesView]
-  private val formProvider = new ContactPreferencesFormProvider()
-  val stubbedControllerDefault = createController(Some(emptyUserAnswers))
-
-  def onwardRoute = Call("GET", "/foo")
+  private val stubbedControllerDefault = createController(Some(emptyUserAnswers))
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    reset(mockSessionRepository, mockNavigator)
+    reset(mockSessionRepository, mockNavigator,mockDataRequiredAction)
   }
+
+  def onwardRoute = Call("GET", "/foo")
 
   private def createController(userAnswers: Option[UserAnswers]) = {
     new ContactPreferencesController(
@@ -70,61 +67,48 @@ class ContactPreferencesControllerSpec2 extends PlaySpec with BeforeAndAfterEach
       fakeIdentifierAction,
       new FakeDataRetrievalAction(userAnswers),
       mockDataRequiredAction,
-      mockContactPreferencesFormProvider,
+      contactPreferencesFormProvider,
       Helpers.stubMessagesControllerComponents(), view
     )
   }
 
-  "ContactPreferences Controller" must {
-    "return OK for a GET in " in {
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val fakeRequest = FakeRequest(GET, contactPreferencesRoute)
-      val result = stubbedControllerDefault.onPageLoad(NormalMode).apply(fakeRequest)
-
+  "ContactPreferences Controller" - {
+    "must return OK for a GET request" in {
+      val result = stubbedControllerDefault.onPageLoad(NormalMode).apply(fakeGetRequest)
       status(result) mustBe OK
     }
 
-    "return OK on a GET when the question has previously been answered" in {
-      val fakeRequest = FakeRequest(GET, contactPreferencesRoute)
-      val testSpecificStubbedController = createController(nonEmptyUserAnswers)
-
-      val result = testSpecificStubbedController.onPageLoad(NormalMode).apply(fakeRequest)
+    "must return OK for a GET request when the question has previously been answered" in {
+      val result = createController(nonEmptyUserAnswers).onPageLoad(NormalMode).apply(fakeGetRequest)
       status(result) mustEqual OK
     }
 
-    "redirect to the next page when valid data is submitted" in {
+    "must redirect to the next page when valid data is submitted" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockNavigator.nextPage(any(),any(),any())) thenReturn onwardRoute
-
-      val fakePostRequest = FakeRequest(POST, contactPreferencesRoute).withFormUrlEncodedBody(("value[0]", ContactPreferences.values.head.toString))
-      val testSpecificStubbedController = createController(nonEmptyUserAnswers)
-      val result = testSpecificStubbedController.onSubmit(NormalMode).apply(fakePostRequest)
+      val result = createController(nonEmptyUserAnswers).onSubmit(NormalMode)
+        .apply(fakePostRequest.withFormUrlEncodedBody(("value[0]", ContactPreferences.values.head.toString)))
 
       status(result) mustEqual SEE_OTHER
       redirectLocation(result).value mustEqual onwardRoute.url
     }
 
-    "return a Bad Request, when invalid data is submitted" in {
-      val fakePostRequest = FakeRequest(POST, contactPreferencesRoute).withFormUrlEncodedBody(("value", "invalid value"))
-      val result = stubbedControllerDefault.onSubmit(NormalMode).apply(fakePostRequest)
-
+    "must return a Bad Request, when invalid data is submitted" in {
+      val result = stubbedControllerDefault.onSubmit(NormalMode)
+        .apply(fakePostRequest.withFormUrlEncodedBody(("value", "invalid value")))
       status(result) mustEqual BAD_REQUEST
     }
 
-    "correctly load the page for a GET if no existing data is found" in {
-      val fakeRequest = FakeRequest(GET, contactPreferencesRoute)
-      val result = stubbedControllerDefault.onPageLoad(NormalMode).apply(fakeRequest)
-
+    "must correctly load the page for a GET request if no existing data is found" in {
+      val result = stubbedControllerDefault.onPageLoad(NormalMode).apply(fakeGetRequest)
       status(result) mustEqual OK
     }
 
-    "redirect to Journey Recovery for a POST if no existing data is found" in {
+    "must redirect to Journey Recovery for a POST request if no existing data is found" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockNavigator.nextPage(any(),any(),any())) thenReturn onwardRoute
-      val fakePostRequest = FakeRequest(POST, contactPreferencesRoute).withFormUrlEncodedBody(("value[0]", ContactPreferences.values.head.toString))
-
-      val result = stubbedControllerDefault.onSubmit(NormalMode).apply(fakePostRequest)
+      val result = stubbedControllerDefault.onSubmit(NormalMode)
+        .apply(fakePostRequest.withFormUrlEncodedBody(("value[0]", ContactPreferences.values.head.toString)))
 
       status(result) mustEqual SEE_OTHER
       redirectLocation(result).value mustEqual onwardRoute.url
