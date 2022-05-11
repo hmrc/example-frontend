@@ -73,7 +73,7 @@ class ContactPreferencesControllerSpec2 extends SpecBase with BeforeAndAfterEach
   }
 
   "ContactPreferences Controller" - {
-    "must return OK for a GET request when no user answers are provided" in {
+    "must return OK for a GET request when no user answers exist" in {
       val result = createController(None).onPageLoad(NormalMode).apply(fakeGetRequest)
       status(result) mustBe OK
     }
@@ -99,12 +99,12 @@ class ContactPreferencesControllerSpec2 extends SpecBase with BeforeAndAfterEach
       status(result) mustEqual BAD_REQUEST
     }
 
-    "must correctly load the page for a GET request if no existing data is found" in {
+    "must correctly load the page for a GET request if no user answers exist" in {
       val result = createController(None).onPageLoad(NormalMode).apply(fakeGetRequest)
       status(result) mustEqual OK
     }
 
-    "must redirect to Journey Recovery for a POST request if no user answers provided" in {
+    "must redirect to Journey Recovery for a POST request if no user answers exist" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockNavigator.nextPage(any(),any(),any())) thenReturn onwardRoute
       val result = createController(None).onSubmit(NormalMode)
