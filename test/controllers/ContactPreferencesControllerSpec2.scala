@@ -50,7 +50,7 @@ class ContactPreferencesControllerSpec2 extends SpecBase with BeforeAndAfterEach
   private val mockSessionRepository = mock[SessionRepository]
   private val mockNavigator = mock[Navigator]
   private val mockDataRequiredAction = mock[DataRequiredAction]
-  private val stubbedControllerDefault = createController(Some(emptyUserAnswers))
+
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -73,8 +73,8 @@ class ContactPreferencesControllerSpec2 extends SpecBase with BeforeAndAfterEach
   }
 
   "ContactPreferences Controller" - {
-    "must return OK for a GET request" in {
-      val result = stubbedControllerDefault.onPageLoad(NormalMode).apply(fakeGetRequest)
+    "must return OK for a GET request when no user answers are provided" in {
+      val result = createController(None).onPageLoad(NormalMode).apply(fakeGetRequest)
       status(result) mustBe OK
     }
 
@@ -94,20 +94,15 @@ class ContactPreferencesControllerSpec2 extends SpecBase with BeforeAndAfterEach
     }
 
     "must return a Bad Request, when invalid data is submitted" in {
-      val result = stubbedControllerDefault.onSubmit(NormalMode)
+      val result = createController(None).onSubmit(NormalMode)
         .apply(fakePostRequest.withFormUrlEncodedBody(("value", "invalid value")))
       status(result) mustEqual BAD_REQUEST
     }
 
-    "must correctly load the page for a GET request if no existing data is found" in {
-      val result = stubbedControllerDefault.onPageLoad(NormalMode).apply(fakeGetRequest)
-      status(result) mustEqual OK
-    }
-
-    "must redirect to Journey Recovery for a POST request if no existing data is found" in {
+    "must redirect to Journey Recovery for a POST request if no user answers provided" in {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockNavigator.nextPage(any(),any(),any())) thenReturn onwardRoute
-      val result = stubbedControllerDefault.onSubmit(NormalMode)
+      val result = createController(None).onSubmit(NormalMode)
         .apply(fakePostRequest.withFormUrlEncodedBody(("value[0]", ContactPreferences.values.head.toString)))
 
       status(result) mustEqual SEE_OTHER
